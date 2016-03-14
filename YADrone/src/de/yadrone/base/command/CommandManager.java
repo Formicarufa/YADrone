@@ -27,6 +27,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import de.yadrone.base.command.event.CommandSentEvent;
+import de.yadrone.base.command.event.CommandSentListener;
 import de.yadrone.base.exception.CommandException;
 import de.yadrone.base.exception.IExceptionListener;
 import de.yadrone.base.manager.AbstractManager;
@@ -45,7 +47,7 @@ public class CommandManager extends AbstractManager
 	private Timer timer;
 
 	private static int seq = 1;
-
+	private CommandSentEvent commandSentEvent= new CommandSentEvent();
 	public CommandManager(InetAddress inetaddr, IExceptionListener excListener) {
 		super(inetaddr);
 		this.q = new CommandQueue(100);
@@ -61,7 +63,15 @@ public class CommandManager extends AbstractManager
 	public void setVideoChannel(VideoChannel c) {
 		q.add(new VideoChannelCommand(c));
 	}
-
+/**
+ * Notifies the listener always after an  ATCommand is send to the drone.
+ */
+	public void addCommandSentListener(CommandSentListener listener) {
+		commandSentEvent.addListener(listener);
+	}
+	public void  removeCommandSentListener(CommandSentListener listener) {
+		commandSentEvent.removeListener(listener);
+	}
 	/**
 	 * Wait (sleep) for specified amount of time (same semantics as after() and waitFor() - blocks the calling thread).
 	 * This way commands can be executed for a certain amount of time, e.g. fly forward for 2000 ms, then turn right.
@@ -907,6 +917,7 @@ public class CommandManager extends AbstractManager
 		
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length, inetaddr, ARDroneUtils.PORT);
 		socket.send(packet);
+		commandSentEvent.invoke(c);
 	}
 
 	private int limit(int i, int min, int max) {

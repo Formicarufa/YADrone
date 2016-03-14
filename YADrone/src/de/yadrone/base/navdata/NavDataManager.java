@@ -29,6 +29,10 @@ import de.yadrone.base.command.CommandManager;
 import de.yadrone.base.command.DetectionType;
 import de.yadrone.base.exception.IExceptionListener;
 import de.yadrone.base.manager.AbstractManager;
+import de.yadrone.base.navdata.common.CommonNavdata;
+import de.yadrone.base.navdata.common.CommonNavdataEvent;
+import de.yadrone.base.navdata.common.CommonNavdataListener;
+import de.yadrone.base.navdata.common.NavdataCollector;
 import de.yadrone.base.utils.ARDroneUtils;
 
 //TODO: refactor parsing code into separate classes but need to think about how to put the listener code
@@ -81,8 +85,11 @@ public class NavDataManager extends AbstractManager
 	private ArrayList<ReferencesListener> referencesListener = new ArrayList<ReferencesListener>();
 	private ArrayList<TrimsListener> trimsListener = new ArrayList<TrimsListener>();
 	
+	private CommonNavdataEvent navdataEvent = new CommonNavdataEvent(); 
+	private NavdataCollector navdataCollector = new NavdataCollector();
+	
 	private long lastSequenceNumber = 1;
-
+	
 	private int mask = 0;
 	private boolean maskChanged = true;
 	private int checksum = 0;
@@ -328,6 +335,15 @@ public class NavDataManager extends AbstractManager
 		this.trimsListener.remove(trimsListener);
 		setMask(this.trimsListener.size() == 0, new int[] { TRIMS_TAG });
 	}
+	public void addCommonNavdataListener(CommonNavdataListener l) {
+		if (!navdataEvent.isEnabled()) navdataCollector.activate(this);
+		navdataEvent.addListener(l);
+		
+	}
+	public void removeCommonNavdataListener(CommonNavdataListener l) {
+		navdataEvent.removeListener(l);
+		if (!navdataEvent.isEnabled()) navdataCollector.deactivate(this);
+	}
 	
 	@Override
 	public void run() {
@@ -427,6 +443,9 @@ public class NavDataManager extends AbstractManager
 			optionData.limit(payloadSize);
 			parseOption(tag, optionData);
 			b.position(b.position() + payloadSize);
+		}
+		if (navdataEvent.isEnabled()) {
+			CommonNavdata navdata = navdataCollector.getNavdata();		
 		}
 
 		// verify checksum; a bit of a hack: assume checksum = 0 is very unlikely

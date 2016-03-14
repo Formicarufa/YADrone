@@ -10,10 +10,12 @@ public class PCMDCommand extends ATCommand {
 	protected int mode;
 
 	/*
-	 * TODO There is a small design flaw in here: PCMD is a generic version of Hover, Stop, and Move so it's fine to
-	 * have hover and combined_yaw_enabled as parameters however, PCMDMag is an extension of PCMD that also allows
-	 * absolute control (for example) Either PCMD should also generalize that concept, or PCMD becomes an abstract
-	 * command that is extended by Stop, Hover and Move
+	 * TODO There is a small design flaw in here: PCMD is a generic version of
+	 * Hover, Stop, and Move so it's fine to have hover and combined_yaw_enabled
+	 * as parameters however, PCMDMag is an extension of PCMD that also allows
+	 * absolute control (for example) Either PCMD should also generalize that
+	 * concept, or PCMD becomes an abstract command that is extended by Stop,
+	 * Hover and Move
 	 */
 	public PCMDCommand(boolean hover, boolean combined_yaw_enabled, float left_right_tilt, float front_back_tilt,
 			float vertical_speed, float angular_speed) {
@@ -56,4 +58,15 @@ public class PCMDCommand extends ATCommand {
 	protected Object[] getParameters() {
 		return new Object[] { mode, left_right_tilt, front_back_tilt, vertical_speed, angular_speed };
 	}
+
+	public String toString(char separator) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(left_right_tilt)
+		.append(separator).append(front_back_tilt).append(separator).append(vertical_speed)
+		.append(separator).append(angular_speed);
+		return builder.toString();
+	}
+
+	
+
 }

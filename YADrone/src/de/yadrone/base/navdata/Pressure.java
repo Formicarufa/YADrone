@@ -2,6 +2,7 @@ package de.yadrone.base.navdata;
 
 public class Pressure {
 	private int pressure;
+	//TODO: Temperature not assigned anywhere? Seems like a bug.
 	private short temperature;
 	private int temperature_meas;
 	private int pressure_meas;
@@ -14,7 +15,7 @@ public class Pressure {
 
 	/**
 	 * @return the pressure
-	 */
+	 */	
 	public int getValue() {
 		return pressure;
 	}
