@@ -445,7 +445,8 @@ public class NavDataManager extends AbstractManager
 			b.position(b.position() + payloadSize);
 		}
 		if (navdataEvent.isEnabled()) {
-			CommonNavdata navdata = navdataCollector.getNavdata();		
+			CommonNavdata navdata = navdataCollector.getNavdata();	
+			navdataEvent.invoke(navdata);
 		}
 
 		// verify checksum; a bit of a hack: assume checksum = 0 is very unlikely

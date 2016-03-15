@@ -33,6 +33,4 @@ public final class CommonNavdataEvent {
 	public boolean isEnabled() {
 		return enabled;
 	}
-	
-
 }

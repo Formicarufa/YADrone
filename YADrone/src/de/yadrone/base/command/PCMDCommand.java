@@ -61,7 +61,10 @@ public class PCMDCommand extends ATCommand {
 
 	public String toString(char separator) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(left_right_tilt)
+		builder
+		.append(System.currentTimeMillis())
+		.append(separator)
+		.append(left_right_tilt)
 		.append(separator).append(front_back_tilt).append(separator).append(vertical_speed)
 		.append(separator).append(angular_speed);
 		return builder.toString();
