@@ -92,7 +92,7 @@ public class NavdataCollector implements TimeListener, PWMlistener, AcceleroList
 	}
 	@Override
 	public void stateChanged(DroneState state) {
-		// TODO Auto-generated method stub
+		// Skipping.
 		
 	}
 	@Override

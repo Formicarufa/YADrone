@@ -4,7 +4,7 @@
 package de.yadrone.base.navdata.common;
 
 /**
- * I have used the same format of navdata which is used by ardone_autonomy
+ * I have used a similar format of navdata to that which is used by the ardone_autonomy
  * project.
  * 
  * @see <a href =
