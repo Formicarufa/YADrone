@@ -12,7 +12,7 @@
 			<option value="6" label="Taking off" />
 			<option value="7" label="Go to point" />
 			<option value="8" label="Landing" />
-			<option value="9" label="?" />
+			<option value="9" label="Looping" />
 		</intEnumeration>
 		<intQuantity name="Battery level" unit="percent"/>
 		<group name="Magnetometer readings">
