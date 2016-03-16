@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<recording>
+<group name="Navdata" file="navdata.tsv">
+</group>
+<group name="Commands" file = "commands.tsv"></group>
+</recording>

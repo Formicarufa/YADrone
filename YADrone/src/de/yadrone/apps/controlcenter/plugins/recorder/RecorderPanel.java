@@ -9,11 +9,12 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -30,6 +31,10 @@ import de.yadrone.base.recorder.Recorder;
  *14. 3. 2016
  */
 public class RecorderPanel extends JPanel implements ICCPlugin {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2069639302901417264L;
 	private JTextField textField;
 	private IARDrone drone;
 	boolean recording = false;
@@ -38,6 +43,8 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 	private FileOutputStream navdataout;
 	private FileOutputStream commandsout;
 	private JButton buttonRecord;
+	private JCheckBox checkBoxZip;
+	private String recordingName;
 
 	/**
 	 * Create the panel.
@@ -52,8 +59,8 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 		add(textField);
 		textField.setColumns(10);
 		
-		JCheckBox chckbxNewCheckBox = new JCheckBox("Package to .zip");
-		add(chckbxNewCheckBox);
+		checkBoxZip = new JCheckBox("Package to .zip");
+		add(checkBoxZip);
 		
 		buttonRecord = new JButton("Start recording");
 		buttonRecord.addActionListener(new ActionListener() {
@@ -70,6 +77,7 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 		
 		labelError = new JLabel("");
 		add(labelError);
+		
 
 	}
 
@@ -77,12 +85,12 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 	 * 
 	 */
 	protected void startRecording() {
-		String dir = textField.getText();
-		if (dir.isEmpty()) {
+		recordingName = textField.getText();
+		if (recordingName.isEmpty()) {
 			labelError.setText("Please, insert a name.");
 			return;		
 		}
-		File f = new File(dir);
+		File f = new File(recordingName);
 		if (f.exists()) {
 			labelError.setText("Sorry. Select a unique name.");
 			return;			
@@ -91,8 +99,8 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 		if (!f.exists()) {
 			labelError.setText("Sorry. Unable to create a directory.");
 		}
-		String navdataFile = dir + "/navdata.tsv";
-		String commandsFile = dir + "/commands.tsv";
+		String navdataFile = recordingName + "/navdata.tsv";
+		String commandsFile = recordingName + "/commands.tsv";
 		try {
 			navdataout = new FileOutputStream(navdataFile);
 			commandsout = new FileOutputStream(commandsFile);
@@ -120,9 +128,36 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 			commandsout.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return;
+		}
+		copyContentsInfoXml();
+		if (checkBoxZip.isSelected()) {
+			try {
+				ZipFolder.pack(recordingName, recordingName+".zip");
+			} catch (IOException e) {
+				labelError.setText("Sorry. Unable to save .zip.");
+				e.printStackTrace();
+			}
 		}
 		buttonRecord .setText("Start recording");
 		
+	}
+
+	/**
+	 * 
+	 */
+	private void copyContentsInfoXml() {
+		InputStream filesInfo = getClass().getResourceAsStream("/de/yadrone/base/recorder/description.xml");
+		if (filesInfo==null) {
+			labelError.setText("Sorry. Content description file missing");
+		} else  {
+			try {
+				Files.copy(filesInfo, Paths.get(recordingName + "/description.xml"));
+			}  catch (IOException e) {
+				labelError.setText("Sorry. Unable to add description.");
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
