@@ -401,6 +401,12 @@ public class NavDataManager extends AbstractManager
 			{
 				System.err.println("Navdata reception timeout");
 				excListener.exeptionOccurred(new de.yadrone.base.exception.NavDataException(t));
+							
+				if (!this.socket.isConnected()) {
+					// Try to reconnect to the ARDreon if the socket is currently closed
+					this.connect(ARDroneUtils.NAV_PORT);
+					this.ticklePort(ARDroneUtils.NAV_PORT);
+				}
 			} 
 			catch (Throwable t) 
 			{
