@@ -882,12 +882,12 @@ public class CommandManager extends AbstractManager
 
 	private CommandManager initARDrone() 
 	{
-		new Thread(new Runnable() {
-			public void run()
-			{
+//		new Thread(new Runnable() {
+//			public void run()
+//			{
 				setMulticonfiguration();
-			}			
-		}).start();;
+//			}			
+//		}).start();;
 		
 		waitFor(5000);
 		
