@@ -824,7 +824,7 @@ public class CommandManager extends AbstractManager
 		long t0 = 0;
 		while (!doStop) {
 			try {
-				long dt;
+				long dt; //dt seems to be: time elapsed since the last sticky command: i.e. a command which shall be send repeatedly.
 				if (cs == null) {
 					// we need to reset the watchdog within 50ms
 					dt = 40;
@@ -832,6 +832,9 @@ public class CommandManager extends AbstractManager
 					// if there is a sticky command, we can wait until we need to deliver it.
 					long t = System.currentTimeMillis();
 					dt = t - t0;
+					//Developers Guide: According to tests, a satisfying control of the AR.Drone 2.0 is reached by sending the
+					//AT-commands every 30 ms for smooth drone movements.
+					dt = Math.max(0, 30-dt);
 				}
 				c = q.poll(dt, TimeUnit.MILLISECONDS);
 				// System.out.println(c);
@@ -905,7 +908,6 @@ public class CommandManager extends AbstractManager
 		if (!(c instanceof KeepAliveCommand)) {
 			 System.out.println("CommandManager: send " + c.getCommandString(seq));
 		}
-		
 		String config = "AT*CONFIG_IDS=" + (seq++) + ",\"" + CommandManager.SESSION_ID + "\",\"" + CommandManager.PROFILE_ID +"\",\"" + CommandManager.APPLICATION_ID + "\"" + "\r"; // AT*CONFIG_IDS=5,"aabbccdd","bbccddee","ccddeeff"
 		byte[] configPrefix = config.getBytes("ASCII");
 		

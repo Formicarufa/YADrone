@@ -58,7 +58,6 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 		textField = new JTextField();
 		add(textField);
 		textField.setColumns(10);
-		
 		checkBoxZip = new JCheckBox("Package to .zip");
 		add(checkBoxZip);
 		

@@ -402,8 +402,9 @@ public class NavDataManager extends AbstractManager
 				System.err.println("Navdata reception timeout");
 				excListener.exeptionOccurred(new de.yadrone.base.exception.NavDataException(t));
 							
-				if (!this.socket.isConnected()) {
+				if (!this.socket.isConnected()) { //TODO:replace inappropriate use of isConnected
 					// Try to reconnect to the ARDreon if the socket is currently closed
+					//java.net.BindException: Address already in use, Cannot bind (in new DatagramSocket)
 					this.connect(ARDroneUtils.NAV_PORT);
 					this.ticklePort(ARDroneUtils.NAV_PORT);
 				}

@@ -18,6 +18,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 import de.yadrone.apps.controlcenter.CCPropertyManager;
 import de.yadrone.apps.controlcenter.ICCPlugin;
@@ -111,6 +112,9 @@ public class KeyboardLayoutPanel extends JPanel implements ICCPlugin
     	
     	public boolean dispatchKeyEvent(KeyEvent e)
 		{
+    		if (e.getSource() instanceof JTextField) {
+    			return false; // We do not want to interpret text typed to a text field as a command for the drone.
+    		}
 			if (e.getID() == KeyEvent.KEY_PRESSED) 
 			{
                 cmdManager.keyPressed(e);
