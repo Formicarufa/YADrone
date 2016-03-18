@@ -26,6 +26,7 @@
 		<group name="Wind conditions">
 			<doubleQuantity name="Wind speed" unit="m/s" />
 			<!-- Estimated wind direction in North-East frame [rad]  e.g. if wind_angle is pi/4, wind is from South-West to North-East -->
+			<
 			<doubleQuantity name="Wind angle" unit="rad" />
 			<doubleQuantity name="Wind compensation: pitch" unit="milli-degrees" />
 			<doubleQuantity name="Wind compensation: roll" unit="milli-degrees" />
@@ -35,7 +36,7 @@
 			<doubleQuantity name="Roll (Rotation in x)" unit="milli-degees" />
 			<doubleQuantity name="Yaw (Rotation in z)" unit="milli-degees" />
 		</group>
-		<intQuantity name="Altitude" unit="centimeters" />
+		<intQuantity name="Altitude" unit="millimeters" />
 		<group name="Velocity">
 			<doubleQuantity name="Velocity in x" unit="mm/s"/>
 			<doubleQuantity name="Velocity in y" unit="mm/s"/>
@@ -58,6 +59,7 @@
 		<time unit="milliseconds" source="recorder" />
 		<doubleQuantity name="Left-right tilt" unit="-1 to 1" />
 		<doubleQuantity name="Front-back tilt" unit="-1 to 1" />
+		<doubleQuantity name="Vertical speed" unit="-1 to 1" />
 		<doubleQuantity name="Angular speed" unit="-1 to 1" />
 	</toplevelgroup>
 </recording>
