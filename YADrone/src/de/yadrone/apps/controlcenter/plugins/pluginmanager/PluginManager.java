@@ -53,9 +53,9 @@ public class PluginManager extends JPanel implements ICCPlugin
 		JPanel contentPane = new JPanel(new GridBagLayout());
 		
 		// look for all classes implementing the Plugin interface
-		Reflections reflections = new Reflections();
+		//Reflections reflections = new Reflections(); Formicarufa: use this constructor to load plugins from any location.
+		Reflections reflections = new Reflections("de.yadrone.apps.controlcenter.plugins"); //Use this one to speed up the search almost 10 times.
 		Set subTypes = reflections.getSubTypesOf(ICCPlugin.class); // this set contains Class objects
-		
 		// we need a String list, because we want to sort the list alphabetically
 		List<String> sortedList = new ArrayList<String>();
 		Iterator iter = subTypes.iterator();
