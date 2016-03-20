@@ -117,6 +117,7 @@ public class VideoManager extends AbstractTCPManager implements ImageListener
 		{
 			exc.printStackTrace();
 			excListener.exeptionOccurred(new VideoException(exc));
+			connectionStateEvent.stateDisconnected();
 		}
 		
 		close();

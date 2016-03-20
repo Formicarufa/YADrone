@@ -18,31 +18,34 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
 package de.yadrone.base.manager;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
+import java.net.SocketException;
 
-// TODO: I believe IOExceptions should be thrown all the way up,
-// but it means all apps should handle them
-// also need to think about effect if not connected (currently return null or ignore)
-public abstract class AbstractTCPManager extends AbstractManager {
+import de.yadrone.base.connection.ConnectionState;
 
-	protected Socket socket = null;
+// TODO: investigate if we can refactor common parts with AbstractTCPManager
+public abstract class AbstractUDPManager extends AbstractManager {
 
-	public AbstractTCPManager(InetAddress inetaddr) {
+	
+	protected DatagramSocket socket = null;
+	protected boolean doStop = false;
+	
+	
+
+	public AbstractUDPManager(InetAddress inetaddr) {
 		super(inetaddr);
 	}
 
-	public boolean connect(int port) throws IOException 
-	{
+	public boolean connect(int port) {
 		try {
-			socket = new Socket(inetaddr, port);
+			socket = new DatagramSocket(port);
 			socket.setSoTimeout(3000);
-		} catch (IOException e) {
+		} catch (SocketException e) {
 			e.printStackTrace();
 			connected = false;
-			throw e;
+			return false;
 		}
 		connected = true;
 		connectionStateEvent.stateConnected();
@@ -51,48 +54,45 @@ public abstract class AbstractTCPManager extends AbstractManager {
 
 
 	public void close() {
-		try {
-			connected = false;
-			connectionStateEvent.stateDisconnected();
-			if (socket != null) {
-				socket.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (socket != null) {
+			socket.close();
+		}
+		connected = false;
+		connectionStateEvent.stateDisconnected();
+	}
+
+	public void stop() {
+		System.out.println("AbstractManager: Stopping " + getClass().getSimpleName());
+		if (thread != null) {
+			thread.interrupt();
+			doStop = true;
+			thread = null;
 		}
 	}
 
 	protected void ticklePort(int port) {
 		byte[] buf = { 0x01, 0x00, 0x00, 0x00 };
+		DatagramPacket packet = new DatagramPacket(buf, buf.length, inetaddr, port);
 		try {
 			if (socket != null) {
-				OutputStream os = socket.getOutputStream();
-				os.write(buf);
-				connectionStateEvent.stateConnected();
+				socket.send(packet);
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			connectionStateEvent.stateDisconnected();
 		}
 	}
 
-	protected InputStream getInputStream() {
-		try {
-			if (socket != null) {
-				return socket.getInputStream();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
 	public void start() {
-		if (thread == null || thread.getState() == Thread.State.TERMINATED) {
+		System.out.println("AbstractManager: Starting " + getClass().getSimpleName());
+		if (thread == null) {
+			doStop = false;
 			String name = getClass().getSimpleName();
 			thread = new Thread(this, name);
 			thread.start();
+		} else {
+			System.out.println("Already started before " + getClass().getSimpleName());
 		}
 	}
-
 }

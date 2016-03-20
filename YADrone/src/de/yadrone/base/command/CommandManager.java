@@ -31,11 +31,11 @@ import de.yadrone.base.command.event.CommandSentEvent;
 import de.yadrone.base.command.event.CommandSentListener;
 import de.yadrone.base.exception.CommandException;
 import de.yadrone.base.exception.IExceptionListener;
-import de.yadrone.base.manager.AbstractManager;
+import de.yadrone.base.manager.AbstractUDPManager;
 import de.yadrone.base.navdata.CadType;
 import de.yadrone.base.utils.ARDroneUtils;
 
-public class CommandManager extends AbstractManager 
+public class CommandManager extends AbstractUDPManager 
 {
 
 	public final static String APPLICATION_ID = "aabbccdd";
@@ -863,16 +863,19 @@ public class CommandManager extends AbstractManager
 				} else {
 					sendCommand(c);
 				}
+				connectionStateEvent.stateConnected();
 			} 
 			catch (InterruptedException e) 
 			{
 				e.printStackTrace();
 				doStop = true;
 				excListener.exeptionOccurred(new CommandException(e));
+				connectionStateEvent.stateDisconnected();
 			} 
 			catch (Throwable t) {
 				t.printStackTrace();
 				excListener.exeptionOccurred(new CommandException(t));
+				connectionStateEvent.stateDisconnected();
 			}
 		}
 		close();
@@ -956,6 +959,7 @@ public class CommandManager extends AbstractManager
 			if (n == 0 && controlAck != b) {
 				System.err.println("Control ack timeout " + String.valueOf(b));
 				excListener.exeptionOccurred(new CommandException(new RuntimeException("Control ACK timeout")));
+				connectionStateEvent.stateDisconnected();
 			}
 		}
 	}

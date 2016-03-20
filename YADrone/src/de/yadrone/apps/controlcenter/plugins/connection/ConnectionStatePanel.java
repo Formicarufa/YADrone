@@ -12,9 +12,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+import com.google.common.util.concurrent.Service.State;
 
 import de.yadrone.apps.controlcenter.ICCPlugin;
 import de.yadrone.base.IARDrone;
+import de.yadrone.base.connection.ConnectionState;
+import de.yadrone.base.connection.ConnectionStateListener;
 import de.yadrone.base.exception.ARDroneException;
 import de.yadrone.base.exception.CommandException;
 import de.yadrone.base.exception.ConfigurationException;
@@ -22,7 +27,7 @@ import de.yadrone.base.exception.IExceptionListener;
 import de.yadrone.base.exception.NavDataException;
 import de.yadrone.base.exception.VideoException;
 
-public class ConnectionState extends JPanel implements ICCPlugin
+public class ConnectionStatePanel extends JPanel implements ICCPlugin
 {
 	private IARDrone drone;
 	
@@ -36,7 +41,7 @@ public class ConnectionState extends JPanel implements ICCPlugin
 	
 	private IExceptionListener exceptionListener;
 	
-	public ConnectionState()
+	public ConnectionStatePanel()
 	{
 		super(new GridBagLayout());
 		
@@ -73,10 +78,11 @@ public class ConnectionState extends JPanel implements ICCPlugin
 				}
 			}
 		};
+
 		
 		add(commandLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 		add(navdataLabel, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
-		add(configurationLabel, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+		//add(configurationLabel, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 		add(videoLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 	}
 		
@@ -84,6 +90,9 @@ public class ConnectionState extends JPanel implements ICCPlugin
 	{
 		this.drone = drone;
 		drone.addExceptionListener(exceptionListener);
+		drone.getNavDataManager().addConnectionStateListener(navdataListener);
+		drone.getVideoManager().addConnectionStateListener(videoListener);
+		drone.getCommandManager().addConnectionStateListener(commandsListener);
 	}
 	
 	public void deactivate()
@@ -120,4 +129,48 @@ public class ConnectionState extends JPanel implements ICCPlugin
 	{
 		return this;
 	}
+	private void setStateIcon(JLabel label, ConnectionState state) {
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				String connectedStr = "Connected.";
+				if (state==ConnectionState.Connected) {
+					label.setIcon(greenIcon);
+					label.setToolTipText(connectedStr);
+				} else {
+					label.setIcon(redIcon);
+					if(connectedStr.equals(label.getToolTipText())) {
+						label.setToolTipText("Disconnected.");
+					}
+				}
+			}
+		});
+
+	}
+	ConnectionStateListener navdataListener = new ConnectionStateListener() {
+		
+		@Override
+		public void stateChanged(ConnectionState newState) {
+			setStateIcon(navdataLabel, newState);
+			
+		}
+	};
+	ConnectionStateListener commandsListener = new ConnectionStateListener() {
+		
+		@Override
+		public void stateChanged(ConnectionState newState) {
+			setStateIcon(commandLabel, newState);
+			
+		}
+	};
+	ConnectionStateListener videoListener = new ConnectionStateListener() {
+		
+		@Override
+		public void stateChanged(ConnectionState newState) {
+			setStateIcon(videoLabel, newState);
+			
+		}
+	};
+	
 }

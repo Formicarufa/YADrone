@@ -28,7 +28,7 @@ import java.util.zip.CRC32;
 import de.yadrone.base.command.CommandManager;
 import de.yadrone.base.command.DetectionType;
 import de.yadrone.base.exception.IExceptionListener;
-import de.yadrone.base.manager.AbstractManager;
+import de.yadrone.base.manager.AbstractUDPManager;
 import de.yadrone.base.navdata.common.CommonNavdata;
 import de.yadrone.base.navdata.common.CommonNavdataEvent;
 import de.yadrone.base.navdata.common.CommonNavdataListener;
@@ -37,7 +37,7 @@ import de.yadrone.base.utils.ARDroneUtils;
 
 //TODO: refactor parsing code into separate classes but need to think about how to put the listener code
 //option: make it one abstract listener, disadvantage: each client has many methods to implement
-public class NavDataManager extends AbstractManager 
+public class NavDataManager extends AbstractUDPManager 
 {
 
 	private IExceptionListener excListener;
@@ -447,7 +447,7 @@ public class NavDataManager extends AbstractManager
 				// ticklePort(ARDroneUtils.NAV_PORT);
 				socket.receive(packet);
 				ByteBuffer buffer = ByteBuffer.wrap(packet.getData(), 0, packet.getLength());
-
+				connectionStateEvent.stateConnected();
 				DroneState s = parse(buffer);
 
 				// according to 7.1.2. of the ARDrone Developer Guide demo
@@ -489,13 +489,14 @@ public class NavDataManager extends AbstractManager
 			{
 				System.err.println("Navdata reception timeout");
 				excListener.exeptionOccurred(new de.yadrone.base.exception.NavDataException(t));
-							
+				connectionStateEvent.stateDisconnected();			
 				this.ticklePort(ARDroneUtils.NAV_PORT);
 			} 
 			catch (Throwable t) 
 			{
 				// continue whatever goes wrong
 				t.printStackTrace();
+				connectionStateEvent.stateDisconnected();
 			}
 		}
 		close();
