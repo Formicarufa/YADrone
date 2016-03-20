@@ -70,6 +70,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
         addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				drone.stop();
+				drone.disconnect();
 				System.exit(0);
 			}
 		});

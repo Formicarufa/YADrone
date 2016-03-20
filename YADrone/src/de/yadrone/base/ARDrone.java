@@ -123,10 +123,19 @@ public class ARDrone implements IARDrone, IExceptionListener {
 		return configurationManager;
 	}
 
+	/**
+	 * Immediately stops the drone.
+	 */
 	@Override
 	public void stop() {
 		freeze();
 		landing();
+	}
+	/**
+	 * Closes all communication channels. 
+	 */
+	@Override
+	public void disconnect() {
 		CommandManager cm = getCommandManager();
 		cm.stop();
 		ConfigurationManager cfgm = getConfigurationManager();

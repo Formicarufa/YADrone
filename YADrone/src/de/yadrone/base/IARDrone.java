@@ -39,6 +39,7 @@ public interface IARDrone {
 	
 	public void start();
 	public void stop();
+	void disconnect();
 	
 	//camera
 	public void setHorizontalCamera();//setFrontCameraStreaming()
@@ -76,4 +77,5 @@ public interface IARDrone {
 	public void setMinAltitude(int altitude);
 	
 	public void move3D(int speedX, int speedY, int speedZ, int speedSpin);
+	
 }

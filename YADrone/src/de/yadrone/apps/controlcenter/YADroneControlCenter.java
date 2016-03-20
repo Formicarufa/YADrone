@@ -26,6 +26,7 @@ public class YADroneControlCenter
 			
 			if (ardrone != null)
 				ardrone.stop();
+				ardrone.disconnect();
 			System.exit(-1);
 		}
 	}
