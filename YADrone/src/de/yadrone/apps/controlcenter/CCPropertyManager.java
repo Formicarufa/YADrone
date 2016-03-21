@@ -115,7 +115,35 @@ public class CCPropertyManager extends Properties
 			exc.printStackTrace();
 		}
 	}
-	
+	public String getRecordingStoragePath()
+	{
+		try
+		{
+			File f = new File("./");
+			String str = getProperty("recording_storage_path", f.getAbsolutePath());
+			return str;
+		}
+		catch(Exception exc)
+		{
+			return null;
+		}
+	}
+	public void setRecordingStoragePath(String path)
+	{
+		try
+		{
+			File f = new File(path);
+			if (!f.exists())
+				f.mkdirs();
+			
+			setProperty("recording_storage_path", path);
+			store();
+		}
+		catch(Exception exc)
+		{
+			exc.printStackTrace();
+		}
+	}
 	public String getVideoPlayFile() 
 	{
 		return getProperty("video_play_file", "");

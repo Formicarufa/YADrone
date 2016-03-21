@@ -18,13 +18,22 @@ import java.nio.file.Paths;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import de.yadrone.apps.controlcenter.CCPropertyManager;
 import de.yadrone.apps.controlcenter.ICCPlugin;
 import de.yadrone.base.IARDrone;
 import de.yadrone.base.recorder.Recorder;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  * @author Formicarufa (Tomas Prochazka)
@@ -39,27 +48,106 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 	private IARDrone drone;
 	boolean recording = false;
 	private Recorder recorder;
-	private JLabel labelError;
 	private FileOutputStream navdataout;
 	private FileOutputStream commandsout;
 	private JButton buttonRecord;
 	private JCheckBox checkBoxZip;
 	private String recordingName;
+	private JLabel labelError;
+	private JLabel lblPath;
+	private JTextField pathField;
+	private JButton buttonBrowse;
+	private final Action action = new BrowseAction();
+	private CCPropertyManager props;
+	private File recordingFolder;
+	private File locationFolder;
+	private JLabel lblSeparator;
+	private JComboBox separatorComboBox;
+	private boolean isSeparatorTab;
 
 	/**
 	 * Create the panel.
 	 */
 	public RecorderPanel() {
-		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{26, 108, 153, 44, 0};
+		gridBagLayout.rowHeights = new int[]{16, 23, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		setLayout(gridBagLayout);
 		
-		JLabel lblContent = new JLabel("Recording name");
-		add(lblContent);
+		JLabel lblContent = new JLabel("Recording name:");
+		GridBagConstraints gbc_lblContent = new GridBagConstraints();
+		gbc_lblContent.anchor = GridBagConstraints.WEST;
+		gbc_lblContent.insets = new Insets(0, 0, 5, 5);
+		gbc_lblContent.gridx = 1;
+		gbc_lblContent.gridy = 1;
+		add(lblContent, gbc_lblContent);
 		
 		textField = new JTextField();
-		add(textField);
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.insets = new Insets(0, 0, 5, 5);
+		gbc_textField.gridx = 2;
+		gbc_textField.gridy = 1;
+		add(textField, gbc_textField);
 		textField.setColumns(10);
+		
+		lblPath = new JLabel("Path:");
+		GridBagConstraints gbc_lblPath = new GridBagConstraints();
+		gbc_lblPath.anchor = GridBagConstraints.WEST;
+		gbc_lblPath.insets = new Insets(0, 0, 5, 5);
+		gbc_lblPath.gridx = 1;
+		gbc_lblPath.gridy = 2;
+		add(lblPath, gbc_lblPath);
+		
+		pathField = new JTextField();
+		GridBagConstraints gbc_pathField = new GridBagConstraints();
+		gbc_pathField.fill = GridBagConstraints.BOTH;
+		gbc_pathField.insets = new Insets(0, 0, 5, 5);
+		gbc_pathField.gridx = 2;
+		gbc_pathField.gridy = 2;
+		add(pathField, gbc_pathField);
+		pathField.setColumns(10);
+		
+		buttonBrowse = new JButton("...");
+		buttonBrowse.setAction(action);
+		GridBagConstraints gbc_buttonBrowse = new GridBagConstraints();
+		gbc_buttonBrowse.insets = new Insets(0, 0, 5, 0);
+		gbc_buttonBrowse.gridx = 3;
+		gbc_buttonBrowse.gridy = 2;
+		add(buttonBrowse, gbc_buttonBrowse);
+		
+		lblSeparator = new JLabel("Separator");
+		GridBagConstraints gbc_lblSeparator = new GridBagConstraints();
+		gbc_lblSeparator.anchor = GridBagConstraints.WEST;
+		gbc_lblSeparator.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSeparator.gridx = 1;
+		gbc_lblSeparator.gridy = 3;
+		add(lblSeparator, gbc_lblSeparator);
+		
+		separatorComboBox = new JComboBox();
+		separatorComboBox.setModel(new DefaultComboBoxModel(new String[] {"Tab", "Comma"}));
+		GridBagConstraints gbc_separatorComboBox = new GridBagConstraints();
+		gbc_separatorComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_separatorComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_separatorComboBox.gridx = 2;
+		gbc_separatorComboBox.gridy = 3;
+		add(separatorComboBox, gbc_separatorComboBox);
+		
+		labelError = new JLabel("");
+		GridBagConstraints gbc_labelError = new GridBagConstraints();
+		gbc_labelError.insets = new Insets(0, 0, 5, 5);
+		gbc_labelError.gridx = 2;
+		gbc_labelError.gridy = 4;
+		add(labelError, gbc_labelError);
 		checkBoxZip = new JCheckBox("Package to .zip");
-		add(checkBoxZip);
+		GridBagConstraints gbc_checkBoxZip = new GridBagConstraints();
+		gbc_checkBoxZip.anchor = GridBagConstraints.NORTHWEST;
+		gbc_checkBoxZip.insets = new Insets(0, 0, 5, 5);
+		gbc_checkBoxZip.gridx = 1;
+		gbc_checkBoxZip.gridy = 5;
+		add(checkBoxZip, gbc_checkBoxZip);
 		
 		buttonRecord = new JButton("Start recording");
 		buttonRecord.addActionListener(new ActionListener() {
@@ -72,11 +160,13 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 				}
 			}
 		});
-		add(buttonRecord);
-		
-		labelError = new JLabel("");
-		add(labelError);
-		
+		GridBagConstraints gbc_buttonRecord = new GridBagConstraints();
+		gbc_buttonRecord.anchor = GridBagConstraints.NORTHWEST;
+		gbc_buttonRecord.insets = new Insets(0, 0, 5, 5);
+		gbc_buttonRecord.gridx = 1;
+		gbc_buttonRecord.gridy = 6;
+		add(buttonRecord, gbc_buttonRecord);
+		props=CCPropertyManager.getInstance();
 
 	}
 
@@ -89,17 +179,26 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 			labelError.setText("Please, insert a name.");
 			return;		
 		}
-		File f = new File(recordingName);
-		if (f.exists()) {
+		locationFolder = new File(pathField.getText());
+		recordingFolder = new File(locationFolder,recordingName);
+		if (recordingFolder.exists()) {
 			labelError.setText("Sorry. Select a unique name.");
 			return;			
 		}
-		f.mkdir();
-		if (!f.exists()) {
+		recordingFolder.mkdir();
+		if (!recordingFolder.exists()) {
 			labelError.setText("Sorry. Unable to create a directory.");
 		}
-		String navdataFile = recordingName + "/navdata.tsv";
-		String commandsFile = recordingName + "/commands.tsv";
+		File navdataFile;
+		File commandsFile;
+		isSeparatorTab = separatorComboBox.getSelectedIndex()==0;
+		if (isSeparatorTab) {
+			navdataFile = new File(recordingFolder, "navdata.tsv");
+			commandsFile = new File(recordingFolder, "commands.tsv");			
+		} else {
+			navdataFile = new File(recordingFolder, "navdata.csv");
+			commandsFile = new File(recordingFolder, "commands.csv");		
+		}
 		try {
 			navdataout = new FileOutputStream(navdataFile);
 			commandsout = new FileOutputStream(commandsFile);
@@ -110,8 +209,9 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 		}
 		recording=true;
 		buttonRecord.setText("Stop recording.");
-		recorder.startRecordingNavdata(new PrintStream(navdataout));
-		recorder.startRecordingCommands(new PrintStream(commandsout));
+		char separator = isSeparatorTab ? '\t' : ',';
+		recorder.startRecordingNavdata(new PrintStream(navdataout),separator);
+		recorder.startRecordingCommands(new PrintStream(commandsout),separator);
 		
 	}
 
@@ -132,10 +232,15 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 		copyContentsInfoXml();
 		if (checkBoxZip.isSelected()) {
 			try {
-				ZipFolder.pack(recordingName, recordingName+".zip");
+				ZipFolder.pack(recordingFolder, new File(locationFolder, recordingName+".zip"));
 			} catch (IOException e) {
 				labelError.setText("Sorry. Unable to save .zip.");
 				e.printStackTrace();
+				return;
+			}
+			boolean res = DirectoryRemover.remove(recordingFolder);
+			if (!res) {
+				labelError.setText("Sorry. Unable to delete old files.");
 			}
 		}
 		buttonRecord .setText("Start recording");
@@ -146,12 +251,17 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 	 * 
 	 */
 	private void copyContentsInfoXml() {
-		InputStream filesInfo = getClass().getResourceAsStream("/de/yadrone/base/recorder/description.xml");
+		InputStream filesInfo;
+		if (isSeparatorTab) {
+			filesInfo = getClass().getResourceAsStream("/de/yadrone/base/recorder/description.xml");			
+		} else {
+			filesInfo = getClass().getResourceAsStream("/de/yadrone/base/recorder/description.csv.xml");	
+		}
 		if (filesInfo==null) {
 			labelError.setText("Sorry. Content description file missing");
 		} else  {
 			try {
-				Files.copy(filesInfo, Paths.get(recordingName + "/description.xml"));
+				Files.copy(filesInfo, new File(recordingFolder,"description.xml").toPath());
 			}  catch (IOException e) {
 				labelError.setText("Sorry. Unable to add description.");
 				e.printStackTrace();
@@ -163,17 +273,21 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 	public void activate(IARDrone drone) {
 		this.drone = drone;
 		recorder = new Recorder(drone);
+		pathField.setText(props.getRecordingStoragePath());
+		
+		
 		
 	}
 
 	@Override
 	public void deactivate() {
-		// TODO Auto-generated method stub
+		if (recording) {
+			stopRecording();
+		}
 		
 	}
 	@Override
 	public String getTitle() {
-		// TODO Auto-generated method stub
 		return "Navdata recorder";
 	}
 
@@ -215,5 +329,21 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 	@Override
 	public JPanel getPanel() {
 		return this;
+	}
+	private class BrowseAction extends AbstractAction {
+		public BrowseAction() {
+			putValue(NAME, "...");
+			putValue(SHORT_DESCRIPTION, "Choose path");
+		}
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser fc = new JFileChooser(props.getVideoStoragePath());
+			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int res=fc.showOpenDialog(RecorderPanel.this);
+			if (res == JFileChooser.APPROVE_OPTION) {
+				String path = fc.getSelectedFile().getPath();
+				props.setRecordingStoragePath(path);
+				pathField.setText(path);
+			}
+		}
 	}
 }

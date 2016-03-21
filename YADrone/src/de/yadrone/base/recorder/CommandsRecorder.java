@@ -17,13 +17,15 @@ import de.yadrone.base.command.event.CommandSentListener;
 class CommandsRecorder implements CommandSentListener{
 
 	PrintStream stream;
+	private char separator;
 
 	/**
 	 * @param stream
 	 */
-	public CommandsRecorder(PrintStream stream) {
+	public CommandsRecorder(PrintStream stream,char separator) {
 		super();
 		this.stream = stream;
+		this.separator = separator;
 	}
 
 	/* (non-Javadoc)
@@ -36,7 +38,7 @@ class CommandsRecorder implements CommandSentListener{
 				throw new UnsupportedOperationException("Recording of absolute-control commands is not supported.");
 			}
 			PCMDCommand pcmdCommand = (PCMDCommand) command;
-			stream.println(pcmdCommand.toString('\t'));
+			stream.println(pcmdCommand.toString(separator));
 		}
 	}
 	

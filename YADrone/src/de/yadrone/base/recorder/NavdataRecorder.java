@@ -15,13 +15,16 @@ import de.yadrone.base.navdata.common.CommonNavdataListener;
 class NavdataRecorder implements CommonNavdataListener {
 
 	PrintStream stream;
+	private char separator;
 	
 	/**
 	 * @param stream
 	 */
-	public NavdataRecorder(PrintStream stream) {
+	public NavdataRecorder(PrintStream stream, char separator) {
 		super();
 		this.stream = stream;
+		this.separator = separator;
+		
 	}
 
 	/* (non-Javadoc)
@@ -29,7 +32,7 @@ class NavdataRecorder implements CommonNavdataListener {
 	 */
 	@Override
 	public void navdataReceived(CommonNavdata data) {
-		stream.println(data.toString('\t'));
+		stream.println(data.toString(separator));
 	}
 
 }

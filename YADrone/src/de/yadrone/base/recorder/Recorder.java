@@ -23,9 +23,9 @@ public class Recorder {
 		this.drone = drone;
 	}
 	private NavdataRecorder navdataRecorder;
-	public void startRecordingNavdata(PrintStream stream) {
+	public void startRecordingNavdata(PrintStream stream, char separator) {
 		if (navdataRecorder!=null) return;
-		navdataRecorder= new NavdataRecorder(stream);
+		navdataRecorder= new NavdataRecorder(stream,separator);
 		drone.getNavDataManager().addCommonNavdataListener(navdataRecorder);
 	}
 	public void stopRecordingNavdata() {
@@ -34,9 +34,9 @@ public class Recorder {
 		navdataRecorder=null;
 	}
 	CommandsRecorder commandsRecorder=null;
-	public void startRecordingCommands(PrintStream stream) {
+	public void startRecordingCommands(PrintStream stream, char separator) {
 		if (commandsRecorder!=null) return;
-		commandsRecorder=new CommandsRecorder(stream);
+		commandsRecorder=new CommandsRecorder(stream, separator);
 		drone.getCommandManager().addCommandSentListener(commandsRecorder);
 		
 	}

@@ -12,7 +12,12 @@ public class DirectoryRemover {
 		File f = new File(name);
 		return remove(f);
 	}
-	private static boolean remove(File dir) {
+	/**
+	 * Removes a directory at the given path including all files and sub-directories.
+	 * @param name
+	 * @return
+	 */
+	public static boolean remove(File dir) {
 		if (!dir.isDirectory()) throw new IllegalArgumentException("Expected a directory");
 		File[] content = dir.listFiles();
 		for (File f : content) {
