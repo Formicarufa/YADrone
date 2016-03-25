@@ -53,7 +53,6 @@ public class CommandManager extends AbstractUDPManager
 		this.q = new CommandQueue(100);
 		this.timer = new Timer("YADrone CommandManager Timer");
 		this.excListener = excListener;
-		initARDrone();
 	}
 
 	public void resetCommunicationWatchDog() {
@@ -815,8 +814,9 @@ public class CommandManager extends AbstractUDPManager
 	 * </ul>
 	 */
 	@Override
-	public void run() {
+	public synchronized void run() {
 		connect(ARDroneUtils.PORT);
+		initARDrone();
 		ATCommand c;
 		ATCommand cs = null;
 		final ATCommand cAck = new ResetControlAckCommand();
@@ -880,31 +880,23 @@ public class CommandManager extends AbstractUDPManager
 		}
 		close();
 		timer.cancel();
+		q.clear();
+		seq=1;
 		System.out.println("doStop() called ? " + doStop + " ... Stopped " + getClass().getSimpleName());
 	}
 
-	private CommandManager initARDrone() 
+	private void initARDrone() 
 	{
-//		new Thread(new Runnable() {
-//			public void run()
-//			{
-				setMulticonfiguration();
-//			}			
-//		}).start();;
-		
-		waitFor(5000);
-		
+		setMulticonfiguration();
 		// pmode parameter and first misc parameter are related
 		sendPMode(2);
 		sendMisc(2, 20, 2000, 3000);
 		freeze();
-		landing();
-		
+		landing();		
 		setOutdoor(false, false);
 		setMaxAltitude(10000);
 		setMaxVz(1000);
 		setMaxEulerAngle(0.25f);
-		return this;
 	}
 
 	private synchronized void sendCommand(ATCommand c) throws InterruptedException, IOException {
@@ -949,7 +941,7 @@ public class CommandManager extends AbstractUDPManager
 
 	private void waitForControlAck(boolean b) throws InterruptedException {
 		if (controlAck != b) {
-			int n = 1;
+			int n = 20;
 			synchronized (controlAckLock) {
 				while (n > 0 && controlAck != b) {
 					controlAckLock.wait(50);

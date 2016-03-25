@@ -434,12 +434,11 @@ public class NavDataManager extends AbstractUDPManager
 	}
 	
 	@Override
-	public void run() {
+	public synchronized void run() {
 		connect(ARDroneUtils.NAV_PORT);
 		ticklePort(ARDroneUtils.NAV_PORT);
 		boolean bootstrapping = true;
 		boolean controlAck = false;
-
 		DatagramPacket packet = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
 		while (!doStop) {
 			try {
@@ -456,6 +455,7 @@ public class NavDataManager extends AbstractUDPManager
 				if (bootstrapping) {
 					controlAck = s.isControlReceived();
 					manager.setControlAck(controlAck);
+					bootstrapping = false;
 					if (s.isNavDataBootstrap()) {
 						// presumably iso setting the demo option we can already ask for the options we want here
 						manager.setNavDataDemo(true);
@@ -463,7 +463,6 @@ public class NavDataManager extends AbstractUDPManager
 					} else {
 						System.out.println("Navdata was already bootstrapped");
 					}
-					bootstrapping = false;
 				}
 
 				// detect control Ack change
@@ -500,6 +499,8 @@ public class NavDataManager extends AbstractUDPManager
 			}
 		}
 		close();
+		maskChanged=true;
+		checksum=0;
 		System.out.println("Stopped " + getClass().getSimpleName());
 	}
 
@@ -536,8 +537,9 @@ public class NavDataManager extends AbstractUDPManager
 			b.position(b.position() + payloadSize);
 		}
 		if (navdataEvent.isEnabled()) {
+			int missing = navdataCollector.getUnsetNavdataCount();
 			CommonNavdata navdata = navdataCollector.getNavdata();	
-			navdataEvent.invoke(navdata);
+			navdataEvent.invoke(navdata,missing);
 		}
 
 		// verify checksum; a bit of a hack: assume checksum = 0 is very unlikely

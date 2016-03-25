@@ -46,6 +46,7 @@ public class KeyboardLayoutPanel extends JPanel implements ICCPlugin
 		
 		originalButton = new JRadioButton("Original Layout");
 		originalButton.setOpaque(false);
+		originalButton.setFocusable(false);
 		originalButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
@@ -59,6 +60,7 @@ public class KeyboardLayoutPanel extends JPanel implements ICCPlugin
 		
 		alternativeButton = new JRadioButton("Alternative WASD");
 		alternativeButton.setOpaque(false);
+		alternativeButton.setFocusable(false);
 		alternativeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{

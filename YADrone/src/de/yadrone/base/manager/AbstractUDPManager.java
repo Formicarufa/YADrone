@@ -30,7 +30,7 @@ public abstract class AbstractUDPManager extends AbstractManager {
 
 	
 	protected DatagramSocket socket = null;
-	protected boolean doStop = false;
+	protected volatile boolean doStop = false;
 	
 	
 
@@ -84,7 +84,7 @@ public abstract class AbstractUDPManager extends AbstractManager {
 		}
 	}
 
-	public void start() {
+	public synchronized void start() {
 		System.out.println("AbstractManager: Starting " + getClass().getSimpleName());
 		if (thread == null) {
 			doStop = false;

@@ -39,7 +39,8 @@ public interface IARDrone {
 	
 	public void start();
 	public void stop();
-	void disconnect();
+	public void disconnect();
+	public void restart();
 	
 	//camera
 	public void setHorizontalCamera();//setFrontCameraStreaming()

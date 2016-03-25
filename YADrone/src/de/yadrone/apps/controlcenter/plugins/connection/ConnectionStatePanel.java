@@ -1,14 +1,18 @@
 package de.yadrone.apps.controlcenter.plugins.connection;
 
 
+import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -40,6 +44,8 @@ public class ConnectionStatePanel extends JPanel implements ICCPlugin
 	private JLabel navdataLabel;
 	
 	private IExceptionListener exceptionListener;
+
+	private JButton reconnectButton;
 	
 	public ConnectionStatePanel()
 	{
@@ -52,7 +58,7 @@ public class ConnectionStatePanel extends JPanel implements ICCPlugin
 		configurationLabel = new JLabel("Configuration Channel", greenIcon, SwingConstants.LEFT);
 		navdataLabel = new JLabel("Navdata Channel", greenIcon, SwingConstants.LEFT);
 		videoLabel = new JLabel("Video Channel", greenIcon, SwingConstants.LEFT);
-		
+		reconnectButton = new JButton("Restart connection");
 		exceptionListener = new IExceptionListener() {
 			public void exeptionOccurred(ARDroneException exc)
 			{
@@ -84,6 +90,15 @@ public class ConnectionStatePanel extends JPanel implements ICCPlugin
 		add(navdataLabel, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 		//add(configurationLabel, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 		add(videoLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+		add(reconnectButton, new GridBagConstraints(0, 4, 1, 1, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0) );
+		reconnectButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				drone.restart();
+				
+			}
+		});
 	}
 		
 	public void activate(IARDrone drone)

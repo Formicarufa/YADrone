@@ -386,4 +386,20 @@ public class ARDrone implements IARDrone, IExceptionListener {
 		}
 		return inetaddr;
 	}
+
+	/* (non-Javadoc)
+	 * @see de.yadrone.base.IARDrone#restart()
+	 */
+	@Override
+	public void restart() {
+		commandManager.stop();
+		navdataManager.stop();
+		configurationManager.close();
+		//because of the methods run and start are synchronized,
+		//the start() methods will be called only after the run() method on another thread ends.
+		configurationManager.start();
+		videoManager.reinitialize();
+		navdataManager.start();
+		commandManager.start();
+	}
 }

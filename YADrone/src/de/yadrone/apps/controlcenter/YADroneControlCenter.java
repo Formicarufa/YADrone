@@ -26,6 +26,12 @@ public class YADroneControlCenter
 			
 			if (ardrone != null)
 				ardrone.stop();
+			//Do not disconnect the drone before actually sending the stop commands...
+				try {
+					Thread.sleep(80);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				ardrone.disconnect();
 			System.exit(-1);
 		}

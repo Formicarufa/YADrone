@@ -30,16 +30,14 @@ import de.yadrone.base.manager.AbstractTCPManager;
 import de.yadrone.base.utils.ARDroneUtils;
 import de.yadrone.base.video.xuggler.XugglerDecoder;
 
-public class VideoManager extends AbstractTCPManager implements ImageListener 
-{
+public class VideoManager extends AbstractTCPManager implements ImageListener {
 	private IExceptionListener excListener;
-	
+
 	private VideoDecoder decoder;
 
 	private ArrayList<ImageListener> listener = new ArrayList<ImageListener>();
 
-	public VideoManager(InetAddress inetaddr, VideoDecoder decoder, IExceptionListener excListener) 
-	{
+	public VideoManager(InetAddress inetaddr, VideoDecoder decoder, IExceptionListener excListener) {
 		super(inetaddr);
 		this.decoder = decoder;
 		this.excListener = excListener;
@@ -50,7 +48,7 @@ public class VideoManager extends AbstractTCPManager implements ImageListener
 		if (this.listener.size() == 1)
 			decoder.setImageListener(this);
 	}
-	
+
 	public void removeImageListener(ImageListener listener) {
 		this.listener.remove(listener);
 		if (this.listener.size() == 0)
@@ -58,68 +56,47 @@ public class VideoManager extends AbstractTCPManager implements ImageListener
 	}
 
 	/** Called only by decoder to inform all the other listener */
-	public void imageUpdated(BufferedImage image)
-	{
-		for (int i=0; i < listener.size(); i++)
-		{
+	public void imageUpdated(BufferedImage image) {
+		for (int i = 0; i < listener.size(); i++) {
 			listener.get(i).imageUpdated(image);
 		}
 	}
-	
-	public boolean connect(int port) throws IOException
-	{
+
+	public boolean connect(int port) throws IOException {
 		if (decoder == null)
 			return false;
 
 		return super.connect(port);
 	}
 
-	public void reinitialize()
-	{
+	public void reinitialize() {
 		System.out.println("VideoManager: reinitialize video stream ...");
 		close();
 		System.out.println("VideoManager: previous stream closed ...");
-		try
-		{
-			System.out.println("VideoManager: create new decoder");
-			decoder.stop();
-			decoder = (VideoDecoder)decoder.getClass().newInstance();
-			decoder.setImageListener(this);
-			
-			Thread.sleep(1000);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		System.out.println("VideoManager: resetting decoder");
+		decoder.reset();
 		System.out.println("VideoManager: start connecting again ...");
 		new Thread(this).start();
 	}
-	
+
 	@Override
 	public void run() {
 		if (decoder == null)
 			return;
-		try
-		{
+		try {
 			System.out.println("VideoManager: connect ");
 			connect(ARDroneUtils.VIDEO_PORT);
-			
 			System.out.println("VideoManager: tickle ");
 			ticklePort(ARDroneUtils.VIDEO_PORT);
-			
-//			manager.setVideoBitrateControl(VideoBitRateMode.DISABLED); // bitrate set to maximum
-			
+			// manager.setVideoBitrateControl(VideoBitRateMode.DISABLED); //
+			// bitrate set to maximum
 			System.out.println("VideoManager: decode ");
 			decoder.decode(getInputStream());
-		}
-		catch(Exception exc)
-		{
+		} catch (Exception exc) {
 			exc.printStackTrace();
 			excListener.exeptionOccurred(new VideoException(exc));
 			connectionStateEvent.stateDisconnected();
 		}
-		
 		close();
 	}
 
@@ -127,7 +104,6 @@ public class VideoManager extends AbstractTCPManager implements ImageListener
 	public void close() {
 		if (decoder == null)
 			return;
-
 		super.close();
 	}
 

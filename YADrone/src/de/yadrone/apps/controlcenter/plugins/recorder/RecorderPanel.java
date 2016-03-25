@@ -209,12 +209,27 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 		}
 		recording=true;
 		buttonRecord.setText("Stop recording.");
+		this.disableFocus();
 		char separator = isSeparatorTab ? '\t' : ',';
 		recorder.startRecordingNavdata(new PrintStream(navdataout),separator);
 		recorder.startRecordingCommands(new PrintStream(commandsout),separator);
 		
 	}
 
+	public void disableFocus() {
+		setElementsFocusable(false);
+	}
+	public void enableFocus() {
+		setElementsFocusable(true);
+	}
+	public void setElementsFocusable(boolean b) {
+		buttonBrowse.setFocusable(b);
+		buttonRecord.setFocusable(b);
+		textField.setFocusable(b);
+		pathField.setFocusable(b);
+		checkBoxZip.setFocusable(b);
+		separatorComboBox.setFocusable(b);
+	}
 	/**
 	 * 
 	 */
@@ -243,8 +258,8 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 				labelError.setText("Sorry. Unable to delete old files.");
 			}
 		}
-		buttonRecord .setText("Start recording");
-		
+		buttonRecord.setText("Start recording");
+		enableFocus();
 	}
 
 	/**
@@ -288,7 +303,7 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 	}
 	@Override
 	public String getTitle() {
-		return "Navdata recorder";
+		return "NavData Recorder";
 	}
 
 	/* (non-Javadoc)
@@ -312,7 +327,7 @@ public class RecorderPanel extends JPanel implements ICCPlugin {
 	 */
 	@Override
 	public Dimension getScreenSize() {
-		return new Dimension(330, 250);
+		return new Dimension(450, 230);
 	}
 
 	/* (non-Javadoc)

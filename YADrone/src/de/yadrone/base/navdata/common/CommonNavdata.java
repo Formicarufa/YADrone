@@ -54,7 +54,7 @@ public class CommonNavdata {
 
 	public String toString(String separator) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(separator).append(time).append(separator).append(state).append(separator)
+		builder.append(time).append(separator).append(state).append(separator)
 		.append(battery).append(separator).append(magX).append(separator).append(magY).append(separator)
 		.append(magZ).append(separator).append(pressure).append(separator).append(temperature)
 		.append(separator).append(windSpeed).append(separator).append(windAngle)

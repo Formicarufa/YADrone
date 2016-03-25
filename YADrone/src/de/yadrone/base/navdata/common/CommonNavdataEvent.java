@@ -24,10 +24,10 @@ public final class CommonNavdataEvent {
 		}
 		return remove;
 	}
-	public void invoke(CommonNavdata data) {
+	public void invoke(CommonNavdata data, int missing) {
 		List<CommonNavdataListener> temp = new ArrayList<CommonNavdataListener>(listeners);
 		for (CommonNavdataListener listener : temp) {
-			listener.navdataReceived(data);
+			listener.navdataReceived(data, missing);
 		}
 	}
 	public boolean isEnabled() {

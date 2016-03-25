@@ -20,9 +20,9 @@ import de.yadrone.base.video.VideoDecoder;
 public class XugglerDecoder implements VideoDecoder
 {
 	private ImageListener listener;
-	private boolean doStop = false;
+	private volatile boolean doStop = false;
 
-	public void decode(InputStream is)
+	public synchronized void decode(InputStream is)
 	{
 		// Let's make sure that we can actually convert video pixel formats.
 		if (!IVideoResampler.isSupported(IVideoResampler.Feature.FEATURE_COLORSPACECONVERSION))
@@ -240,5 +240,17 @@ public class XugglerDecoder implements VideoDecoder
 	public void setImageListener(ImageListener listener)
 	{
 		this.listener = listener;
+	}
+	/* (non-Javadoc)
+	 * @see de.yadrone.base.video.VideoDecoder#reset()
+	 */
+	@Override
+	public void reset() {
+		stop();
+		//wait until the method "decode" ends (on another thread).
+		synchronized(this) {
+			//reset:
+			doStop=false;
+		}
 	}
 }

@@ -7,6 +7,7 @@ import java.io.PrintStream;
 
 import de.yadrone.base.navdata.common.CommonNavdata;
 import de.yadrone.base.navdata.common.CommonNavdataListener;
+import de.yadrone.base.navdata.common.NavdataCollector;
 
 /**
  * @author Formicarufa (Tomas Prochazka)
@@ -31,7 +32,14 @@ class NavdataRecorder implements CommonNavdataListener {
 	 * @see de.yadrone.base.navdata.common.CommonNavdataListener#navdataReceived(de.yadrone.base.navdata.common.CommonNavdata)
 	 */
 	@Override
-	public void navdataReceived(CommonNavdata data) {
+	public void navdataReceived(CommonNavdata data, int missingNavdata) {
+		if (missingNavdata==NavdataCollector.LISTENERS_COUNT) {
+			System.err.println("Recorder error: required navdata not present in the message from the drone.");
+			return;
+		} 
+		if (missingNavdata>0) {
+			System.err.println("Recorder error: not all navdata present in the message from the drone.");
+		}
 		stream.println(data.toString(separator));
 	}
 

@@ -8,5 +8,5 @@ package de.yadrone.base.navdata.common;
  *11. 3. 2016
  */
 public interface CommonNavdataListener {
-	void navdataReceived(CommonNavdata data);
+	void navdataReceived(CommonNavdata data, int missingNavdataCount);
 }

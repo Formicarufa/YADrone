@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import de.yadrone.base.IARDrone;
 
 /**
+ * Records navdata or commands to a givenstream.
  * @author Formicarufa (Tomas Prochazka)
  *12. 3. 2016
  */
