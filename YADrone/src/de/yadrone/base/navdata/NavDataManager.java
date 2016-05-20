@@ -1315,8 +1315,10 @@ public class NavDataManager extends AbstractUDPManager
 
 	private void parseTimeOption(ByteBuffer b) {
 		if (timeListener.size() > 0) {
+			/*!<Time representation - source: ARDroneLib, navdata_common.h
+			 *  32 bit value where the 11 most significant bits represent the seconds,
+			 *  and the 21 least significant bits are the microseconds. */
 			int time = b.getInt();
-
 			int useconds = getUSeconds(time);
 			int seconds = getSeconds(time);
 
@@ -1326,20 +1328,21 @@ public class NavDataManager extends AbstractUDPManager
 	}
 
 	/**
-	 * @param time
-	 * @return
+	 * @param time the 11 most significant bits represent the seconds. 
+	 * @return 
 	 */
 	private int getSeconds(int time) {
-		int seconds = (time >>> 11);
+		/*!<  */
+		int seconds = (time >>> 21);
 		return seconds;
 	}
 
 	/**
-	 * @param time
+	 * @param time the 21 least significant bits are the microseconds
 	 * @return
 	 */
 	private int getUSeconds(int time) {
-		int useconds = (time & (0xFFFFFFFF >>> 11));
+		int useconds = (time & (0xFF_FF_FF_FF >>> 11));
 		return useconds;
 	}
 
