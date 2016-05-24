@@ -32,9 +32,9 @@
 			<doubleQuantity name="Wind compensation: roll" unit="milli-degrees" />
 		</group>
 		<group name="Rotation">
-			<doubleQuantity name="Pitch (Rotation in y)" unit="milli-degees" />
-			<doubleQuantity name="Roll (Rotation in x)" unit="milli-degees" />
-			<doubleQuantity name="Yaw (Rotation in z)" unit="milli-degees" />
+			<doubleQuantity name="Pitch (Rotation around y)" unit="milli-degrees" />
+			<doubleQuantity name="Roll (Rotation around x)" unit="milli-degrees" />
+			<doubleQuantity name="Yaw (Rotation around z)" unit="milli-degrees" />
 		</group>
 		<intQuantity name="Altitude" unit="millimeters" />
 		<group name="Velocity">
