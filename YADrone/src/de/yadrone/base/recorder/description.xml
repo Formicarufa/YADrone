@@ -48,10 +48,10 @@
 			<doubleQuantity name="Acceleration in z" unit="mg"/>
 		</group>
 		<group name="Motor powers">
-			<intQuantity name="Motor 1 power" value="0-255"/>
-			<intQuantity name="Motor 2 power" value="0-255"/>
-			<intQuantity name="Motor 3 power" value="0-255"/>
-			<intQuantity name="Motor 4 power" value="0-255"/>
+			<intQuantity name="Motor 1 power" unit="0-255"/>
+			<intQuantity name="Motor 2 power" unit="0-255"/>
+			<intQuantity name="Motor 3 power" unit="0-255"/>
+			<intQuantity name="Motor 4 power" unit="0-255"/>
 		</group>
 		<time unit="microseconds" source="board"/>
 	</toplevelgroup>
